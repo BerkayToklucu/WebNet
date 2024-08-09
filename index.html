@@ -59,56 +59,57 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Posts'i yükle
-      await loadPosts();
+document.addEventListener('DOMContentLoaded', async () => {
+  // Posts'i yükle
+  await loadPosts();
 
-      // Formu gönder
-      document.getElementById('postForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const content = document.getElementById('content').value;
-        try {
-          const response = await fetch('/api/posts', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content }),
-          });
-          if (response.ok) {
-            document.getElementById('content').value = ''; // Formu temizle
-            await loadPosts(); // Posts'i yeniden yükle
-          } else {
-            const data = await response.json();
-            alert(`Error: ${data.error}`);
-          }
-        } catch (error) {
-          alert(`Error: ${error.message}`);
-        }
+  // Formu gönder
+  document.getElementById('postForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('content').value;
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
       });
-    });
-
-    // Posts'i yükleme fonksiyonu
-    async function loadPosts() {
-      try {
-        const response = await fetch('/api/posts');
-        if (response.ok) {
-          const posts = await response.json();
-          const postsContainer = document.getElementById('posts');
-          postsContainer.innerHTML = '';
-          posts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.className = 'post';
-            postElement.textContent = post.content;
-            postsContainer.appendChild(postElement);
-          });
-        } else {
-          alert('Failed to load posts');
-        }
-      } catch (error) {
-        alert(`Error: ${error.message}`);
+      if (response.ok) {
+        document.getElementById('content').value = ''; // Formu temizle
+        await loadPosts(); // Posts'i yeniden yükle
+      } else {
+        const data = await response.json();
+        alert(`Error: ${data.error}`);
       }
+    } catch (error) {
+      alert(`Error: ${error.message}`);
     }
+  });
+});
+
+// Posts'i yükleme fonksiyonu
+async function loadPosts() {
+  try {
+    const response = await fetch('/api/posts');
+    if (response.ok) {
+      const posts = await response.json();
+      const postsContainer = document.getElementById('posts');
+      postsContainer.innerHTML = '';
+      posts.forEach(post => {
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.textContent = post.content;
+        postsContainer.appendChild(postElement);
+      });
+    } else {
+      alert('Failed to load posts');
+    }
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+  }
+}
+
   </script>
 </body>
 </html>
