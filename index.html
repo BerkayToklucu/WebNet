@@ -3,34 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auto Post Page</title>
+  <title>Post Sharing Site</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .post {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fff;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to WebNet</h1>
-  <p>Your post will be submitted automatically.</p>
+  <div class="container">
+    <h1>Create a Post</h1>
+    <form id="postForm">
+      <textarea id="content" placeholder="Write your post content here" rows="5" required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+
+    <h2>Posts</h2>
+    <div id="posts"></div>
+  </div>
 
   <script>
-    // Sayfa yüklendiğinde otomatik olarak çalışacak kod
     document.addEventListener('DOMContentLoaded', async () => {
+      // Posts'i yükle
+      await loadPosts();
+
+      // Formu gönder
+      document.getElementById('postForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const content = document.getElementById('content').value;
+        try {
+          const response = await fetch('/api/posts', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content }),
+          });
+          if (response.ok) {
+            document.getElementById('content').value = ''; // Formu temizle
+            await loadPosts(); // Posts'i yeniden yükle
+          } else {
+            const data = await response.json();
+            alert(`Error: ${data.error}`);
+          }
+        } catch (error) {
+          alert(`Error: ${error.message}`);
+        }
+      });
+    });
+
+    // Posts'i yükleme fonksiyonu
+    async function loadPosts() {
       try {
-        const content = 'This is an auto-generated post content.';
-        const response = await fetch('/api/posts', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ content }),
-        });
+        const response = await fetch('/api/posts');
         if (response.ok) {
-          console.log('Post created successfully!');
+          const posts = await response.json();
+          const postsContainer = document.getElementById('posts');
+          postsContainer.innerHTML = '';
+          posts.forEach(post => {
+            const postElement = document.createElement('div');
+            postElement.className = 'post';
+            postElement.textContent = post.content;
+            postsContainer.appendChild(postElement);
+          });
         } else {
-          const data = await response.json();
-          console.error(`Error: ${data.error}`);
+          alert('Failed to load posts');
         }
       } catch (error) {
-        console.error(`Error: ${error.message}`);
+        alert(`Error: ${error.message}`);
       }
-    });
+    }
   </script>
 </body>
 </html>

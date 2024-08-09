@@ -20,8 +20,11 @@ export default async function handler(req, res) {
       }
       await conn.query('INSERT INTO posts (content) VALUES (?)', [content]);
       res.status(201).json({ message: 'Post created' });
+    } else if (req.method === 'GET') {
+      const rows = await conn.query('SELECT * FROM posts ORDER BY created_at DESC');
+      res.status(200).json(rows);
     } else {
-      res.setHeader('Allow', ['POST']);
+      res.setHeader('Allow', ['POST', 'GET']);
       res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
