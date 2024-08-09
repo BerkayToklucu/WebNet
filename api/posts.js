@@ -1,4 +1,9 @@
 import mariadb from 'mariadb';
+import Cors from 'cors';
+
+const cors = Cors({
+  methods: ['GET', 'POST'],
+});
 
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,
@@ -9,6 +14,8 @@ const pool = mariadb.createPool({
 });
 
 export default async function handler(req, res) {
+  await new Promise((resolve) => cors(req, res, resolve));
+  
   let conn;
   try {
     conn = await pool.getConnection();
