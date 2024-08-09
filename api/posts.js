@@ -1,6 +1,5 @@
 import mariadb from 'mariadb';
 
-// Veritabanı bağlantı havuzunu oluşturun
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -15,7 +14,6 @@ export default async function handler(req, res) {
     conn = await pool.getConnection();
     
     if (req.method === 'POST') {
-      // Veritabanına veri ekleyin
       const { content } = req.body;
       if (!content) {
         return res.status(400).json({ error: 'Content is required' });

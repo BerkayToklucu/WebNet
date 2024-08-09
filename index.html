@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Post Page</title>
+</head>
+<body>
+  <h1>Welcome to WebNet</h1>
+  <p>Your post will be submitted automatically.</p>
+
+  <script>
+    // Sayfa yüklendiğinde otomatik olarak çalışacak kod
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const content = 'This is an auto-generated post content.';
+        const response = await fetch('/api/posts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ content }),
+        });
+        if (response.ok) {
+          console.log('Post created successfully!');
+        } else {
+          const data = await response.json();
+          console.error(`Error: ${data.error}`);
+        }
+      } catch (error) {
+        console.error(`Error: ${error.message}`);
+      }
+    });
+  </script>
+</body>
+</html>
